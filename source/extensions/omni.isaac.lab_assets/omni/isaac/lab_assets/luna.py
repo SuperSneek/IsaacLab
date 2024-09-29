@@ -23,7 +23,7 @@ import omni.isaac.lab.sim as sim_utils
 from omni.isaac.lab.actuators import ActuatorNetLSTMCfg, DCMotorCfg
 from omni.isaac.lab.assets.articulation import ArticulationCfg
 from omni.isaac.lab.sensors import RayCasterCfg
-from omni.isaac.lab.utils.assets import ISAACLAB_NUCLEUS_DIR
+from omni.isaac.lab_assets import ISAACLAB_ASSETS_DATA_DIR
 
 from .velodyne import VELODYNE_VLP_16_RAYCASTER_CFG
 
@@ -31,8 +31,8 @@ from .velodyne import VELODYNE_VLP_16_RAYCASTER_CFG
 # Configuration - Actuators.
 ##
 
-ANYDRIVE_3_SIMPLE_ACTUATOR_CFG = DCMotorCfg(
-    joint_names_expr=[".*HAA", ".*HFE", ".*KFE"],
+LUNA_SIMPLE_ACTUATOR_CFG = DCMotorCfg(
+    joint_names_expr=[".*joint"],
     saturation_effort=120.0,
     effort_limit=80.0,
     velocity_limit=7.5,
@@ -42,23 +42,13 @@ ANYDRIVE_3_SIMPLE_ACTUATOR_CFG = DCMotorCfg(
 """Configuration for ANYdrive 3.x with DC actuator model."""
 
 
-ANYDRIVE_3_LSTM_ACTUATOR_CFG = ActuatorNetLSTMCfg(
-    joint_names_expr=[".*HAA", ".*HFE", ".*KFE"],
-    network_file=f"{ISAACLAB_NUCLEUS_DIR}/ActuatorNets/ANYbotics/anydrive_3_lstm_jit.pt",
-    saturation_effort=120.0,
-    effort_limit=80.0,
-    velocity_limit=7.5,
-)
-"""Configuration for ANYdrive 3.0 (used on ANYmal-C) with LSTM actuator model."""
-
-
 ##
 # Configuration - Articulation.
 ##
 
-ANYMAL_B_CFG = ArticulationCfg(
+LUNA_CFG = ArticulationCfg(
     spawn=sim_utils.UsdFileCfg(
-        usd_path=f"{ISAACLAB_NUCLEUS_DIR}/Robots/ANYbotics/ANYmal-B/anymal_b.usd",
+        usd_path=f"{ISAACLAB_ASSETS_DATA_DIR}/Robots/kamaro/luna/luna.usd",
         activate_contact_sensors=True,
         rigid_props=sim_utils.RigidBodyPropertiesCfg(
             disable_gravity=False,
@@ -77,99 +67,12 @@ ANYMAL_B_CFG = ArticulationCfg(
     init_state=ArticulationCfg.InitialStateCfg(
         pos=(0.0, 0.0, 0.6),
         joint_pos={
-            ".*HAA": 0.0,  # all HAA
-            ".*F_HFE": 0.4,  # both front HFE
-            ".*H_HFE": -0.4,  # both hind HFE
-            ".*F_KFE": -0.8,  # both front KFE
-            ".*H_KFE": 0.8,  # both hind KFE
+            ".*_shoulder_joint": 0.0,  # all HAA
+            ".*_hip_joint": 0.4,  # both front HFE
+            ".*_knee_joint": -0.4,  # both hind HFE
         },
     ),
-    actuators={"legs": ANYDRIVE_3_LSTM_ACTUATOR_CFG},
+    actuators={"legs": LUNA_SIMPLE_ACTUATOR_CFG},
     soft_joint_pos_limit_factor=0.95,
 )
-"""Configuration of ANYmal-B robot using actuator-net."""
-
-
-ANYMAL_C_CFG = ArticulationCfg(
-    spawn=sim_utils.UsdFileCfg(
-        usd_path=f"{ISAACLAB_NUCLEUS_DIR}/Robots/ANYbotics/ANYmal-C/anymal_c.usd",
-        # usd_path=f"{ISAAC_NUCLEUS_DIR}/Robots/ANYbotics/anymal_instanceable.usd",
-        activate_contact_sensors=True,
-        rigid_props=sim_utils.RigidBodyPropertiesCfg(
-            disable_gravity=False,
-            retain_accelerations=False,
-            linear_damping=0.0,
-            angular_damping=0.0,
-            max_linear_velocity=1000.0,
-            max_angular_velocity=1000.0,
-            max_depenetration_velocity=1.0,
-        ),
-        articulation_props=sim_utils.ArticulationRootPropertiesCfg(
-            enabled_self_collisions=True, solver_position_iteration_count=4, solver_velocity_iteration_count=0
-        ),
-        # collision_props=sim_utils.CollisionPropertiesCfg(contact_offset=0.02, rest_offset=0.0),
-    ),
-    init_state=ArticulationCfg.InitialStateCfg(
-        pos=(0.0, 0.0, 0.6),
-        joint_pos={
-            ".*HAA": 0.0,  # all HAA
-            ".*F_HFE": 0.4,  # both front HFE
-            ".*H_HFE": -0.4,  # both hind HFE
-            ".*F_KFE": -0.8,  # both front KFE
-            ".*H_KFE": 0.8,  # both hind KFE
-        },
-    ),
-    actuators={"legs": ANYDRIVE_3_LSTM_ACTUATOR_CFG},
-    soft_joint_pos_limit_factor=0.95,
-)
-"""Configuration of ANYmal-C robot using actuator-net."""
-
-
-ANYMAL_D_CFG = ArticulationCfg(
-    spawn=sim_utils.UsdFileCfg(
-        usd_path=f"{ISAACLAB_NUCLEUS_DIR}/Robots/ANYbotics/ANYmal-D/anymal_d.usd",
-        # usd_path=f"{ISAACLAB_NUCLEUS_DIR}/Robots/ANYbotics/ANYmal-D/anymal_d_minimal.usd",
-        activate_contact_sensors=True,
-        rigid_props=sim_utils.RigidBodyPropertiesCfg(
-            disable_gravity=False,
-            retain_accelerations=False,
-            linear_damping=0.0,
-            angular_damping=0.0,
-            max_linear_velocity=1000.0,
-            max_angular_velocity=1000.0,
-            max_depenetration_velocity=1.0,
-        ),
-        articulation_props=sim_utils.ArticulationRootPropertiesCfg(
-            enabled_self_collisions=True, solver_position_iteration_count=4, solver_velocity_iteration_count=0
-        ),
-        # collision_props=sim_utils.CollisionPropertiesCfg(contact_offset=0.02, rest_offset=0.0),
-    ),
-    init_state=ArticulationCfg.InitialStateCfg(
-        pos=(0.0, 0.0, 0.6),
-        joint_pos={
-            ".*HAA": 0.0,  # all HAA
-            ".*F_HFE": 0.4,  # both front HFE
-            ".*H_HFE": -0.4,  # both hind HFE
-            ".*F_KFE": -0.8,  # both front KFE
-            ".*H_KFE": 0.8,  # both hind KFE
-        },
-    ),
-    actuators={"legs": ANYDRIVE_3_LSTM_ACTUATOR_CFG},
-    soft_joint_pos_limit_factor=0.95,
-)
-"""Configuration of ANYmal-D robot using actuator-net.
-
-Note:
-    Since we don't have a publicly available actuator network for ANYmal-D, we use the same network as ANYmal-C.
-    This may impact the sim-to-real transfer performance.
-"""
-
-
-##
-# Configuration - Sensors.
-##
-
-ANYMAL_LIDAR_CFG = VELODYNE_VLP_16_RAYCASTER_CFG.replace(
-    offset=RayCasterCfg.OffsetCfg(pos=(-0.310, 0.000, 0.159), rot=(0.0, 0.0, 0.0, 1.0))
-)
-"""Configuration for the Velodyne VLP-16 sensor mounted on the ANYmal robot's base."""
+"""Configuration of LUNA quadruped using simple DC actuator models."""
