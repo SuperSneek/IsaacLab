@@ -44,6 +44,7 @@ from omni.isaac.lab.sim import SimulationContext
 # Pre-defined configs
 ##
 from omni.isaac.lab_assets import CARTPOLE_CFG  # isort:skip
+from omni.isaac.lab_assets.luna import LUNA_CFG  # isort: skip
 
 
 def design_scene() -> tuple[dict, list[list[float]]]:
@@ -64,7 +65,7 @@ def design_scene() -> tuple[dict, list[list[float]]]:
     prim_utils.create_prim("/World/Origin2", "Xform", translation=origins[1])
 
     # Articulation
-    cartpole_cfg = CARTPOLE_CFG.copy()
+    cartpole_cfg = LUNA_CFG.copy()
     cartpole_cfg.prim_path = "/World/Origin.*/Robot"
     cartpole = Articulation(cfg=cartpole_cfg)
 
@@ -88,6 +89,7 @@ def run_simulator(sim: sim_utils.SimulationContext, entities: dict[str, Articula
         if count % 500 == 0:
             # reset counter
             count = 0
+            print(robot.body_names)
             # reset the scene entities
             # root state
             # we offset the root state by the origin since the states are written in simulation world frame
@@ -99,12 +101,14 @@ def run_simulator(sim: sim_utils.SimulationContext, entities: dict[str, Articula
             joint_pos, joint_vel = robot.data.default_joint_pos.clone(), robot.data.default_joint_vel.clone()
             joint_pos += torch.rand_like(joint_pos) * 0.1
             robot.write_joint_state_to_sim(joint_pos, joint_vel)
+
+
             # clear internal buffers
             robot.reset()
             print("[INFO]: Resetting robot state...")
         # Apply random action
         # -- generate random joint efforts
-        efforts = torch.randn_like(robot.data.joint_pos) * 5.0
+        efforts = torch.tensor([0,0,0,0,-3,-3,-3,-3,4,4,4,4])
         # -- apply action to the robot
         robot.set_joint_effort_target(efforts)
         # -- write data to sim

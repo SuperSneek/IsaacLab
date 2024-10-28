@@ -58,6 +58,7 @@ from omni.isaac.lab_tasks.utils.wrappers.rsl_rl import (
 
 
 def main():
+    i = 0
     """Play with RSL-RL agent."""
     # parse configuration
     env_cfg = parse_env_cfg(
@@ -113,14 +114,22 @@ def main():
     # reset environment
     obs, _ = env.get_observations()
     timestep = 0
+    once = True
     # simulate environment
     while simulation_app.is_running():
+        i = i + 1
         # run everything in inference mode
         with torch.inference_mode():
+
             # agent stepping
             actions = policy(obs)
             # env stepping
             obs, _, _, _ = env.step(actions)
+            if(once):
+                print(obs)
+                print(actions)
+                once = False
+                print("---------------------------------")
         if args_cli.video:
             timestep += 1
             # Exit the play loop after recording one video

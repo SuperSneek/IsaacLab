@@ -1,0 +1,3 @@
+./isaaclab.sh -p source/standalone/tools/convert_urdf.py ~/Documents/Kamaro/kamarovision/luna_ws/src/luna_description/resource/urdf/luna.urdf ./source/extensions/omni.isaac.lab_assets/data/Robots/kamaro/luna/luna.usd 
+
+ ./isaaclab.sh -p source/standalone/workflows/rsl_rl/train.py --task Isaac-Bipedal-Flat-Luna-v0 --max_iterations 1000
