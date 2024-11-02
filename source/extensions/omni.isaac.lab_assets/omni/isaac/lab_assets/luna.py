@@ -31,12 +31,14 @@ from .velodyne import VELODYNE_VLP_16_RAYCASTER_CFG
 # Configuration - Actuators.
 ##
 
-LUNA_SIMPLE_ACTUATOR_CFG = ImplicitActuatorCfg(
+LUNA_SIMPLE_ACTUATOR_CFG = DCMotorCfg(
     joint_names_expr=[".*joint"],
     effort_limit=12.0,
     velocity_limit=7.5,
-    stiffness={".*": 0.0},
-    damping={".*": 0.0},
+    stiffness={".*": 60.0},
+    damping={".*": 3.0},
+    saturation_effort=24.0
+
 )
 """Configuration for ANYdrive 3.x with DC actuator model."""
 
@@ -59,7 +61,7 @@ LUNA_CFG = ArticulationCfg(
             max_depenetration_velocity=1.0,
         ),
         articulation_props=sim_utils.ArticulationRootPropertiesCfg(
-            enabled_self_collisions=False, solver_position_iteration_count=4, solver_velocity_iteration_count=0
+            enabled_self_collisions=True, solver_position_iteration_count=4, solver_velocity_iteration_count=0
         ),
         # collision_props=sim_utils.CollisionPropertiesCfg(contact_offset=0.02, rest_offset=0.0),
     ),

@@ -15,14 +15,14 @@ from omni.isaac.lab_tasks.utils.wrappers.rsl_rl import (
 @configclass
 class LunaFlatPPORunnerCfg(RslRlOnPolicyRunnerCfg):
     num_steps_per_env = 24
-    max_iterations = 300
-    save_interval = 200
+    max_iterations = 1500
+    save_interval = 100
     experiment_name = "Luna_flat_manager"
     empirical_normalization = False
     policy = RslRlPpoActorCriticCfg(
         init_noise_std=1.0,
-        actor_hidden_dims=[256, 128, 64],
-        critic_hidden_dims=[256, 128, 64],
+        actor_hidden_dims=[512, 256, 128],
+        critic_hidden_dims=[512, 256, 128],
         activation="elu",
     )
     algorithm = RslRlPpoAlgorithmCfg(

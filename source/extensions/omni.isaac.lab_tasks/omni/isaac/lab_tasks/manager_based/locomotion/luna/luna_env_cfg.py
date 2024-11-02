@@ -87,7 +87,7 @@ class CommandsCfg:
         heading_control_stiffness=0.5,
         debug_vis=True,
         ranges=mdp.UniformVelocityCommandCfg.Ranges(
-            lin_vel_x=(-1.0, 1.0), lin_vel_y=(-1.0, 0.0), ang_vel_z=(-1.0, 0.0), heading=(-math.pi, math.pi)
+            lin_vel_x=(-0.0, 0.0), lin_vel_y=(-0.0, 0.0), ang_vel_z=(-0.0, 0.0), heading=(-0.0,0.0)
         ),
     )
 
@@ -96,7 +96,7 @@ class CommandsCfg:
 class ActionsCfg:
     """Action specifications for the MDP."""
 
-    joint_eff = mdp.JointEffortActionCfg(asset_name="robot", joint_names=[".*"], scale=9.0)
+    joint_eff = mdp.JointPositionActionCfg(asset_name="robot", joint_names=[".*"], scale=1.0)
 
 
 @configclass
@@ -116,9 +116,10 @@ class ObservationsCfg:
         #    noise=Unoise(n_min=-0.05, n_max=0.05),
         #)
         velocity_commands = ObsTerm(func=mdp.generated_commands, params={"command_name": "base_velocity"}, scale=1.0) #3 values
-        joint_pos = ObsTerm(func=mdp.joint_pos, noise=Unoise(n_min=-0.2, n_max=0.2), scale=1.0) #12 values
-        joint_vel = ObsTerm(func=mdp.joint_vel, noise=Unoise(n_min=-1.5, n_max=1.5), scale=1.0) #12 values
-        actions = ObsTerm(func=mdp.last_action, scale=1.0, noise=Unoise(n_max=0.5, n_min=0.5)) #12 values
+        joint_pos = ObsTerm(func=mdp.joint_pos, noise=Unoise(n_min=-0.1, n_max=0.1), scale=1.0) #12 values
+        joint_vel = ObsTerm(func=mdp.joint_vel, noise=Unoise(n_min=-0.5, n_max=0.5), scale=1.0) #12 values
+        #joint_torques = ObsTerm(func=mdp.joint_actions_to_limits, noise=Unoise(n_min=-1, n_max=1),scale=1.0) #12 Values
+        actions = ObsTerm(func=mdp.last_action, scale=1.0) #12 values
 
         def __post_init__(self):
             self.enable_corruption = True
@@ -207,7 +208,8 @@ class RewardsCfg:
     ang_vel_xy_l2 = RewTerm(func=mdp.ang_vel_xy_l2, weight=-0.05)
     #base_height_l2 = RewTerm(func=mdp.base_height_l2, weight=-0.1, params={"target_height": 0.3})
     dof_torques_l2 = RewTerm(func=mdp.joint_torques_l2, weight=-1.0e-5)
-    action_rate_l2 = RewTerm(func=mdp.action_rate_l2, weight=-0.1)
+    #the penalty for the action rate has the main effect on how dynamic the robot is in its movement, but also how fast it learns to move
+    action_rate_l2 = RewTerm(func=mdp.action_rate_l2, weight=-1.0e-4)
 
 
     #joint_deviation_hip_abduction = RewTerm(
@@ -228,7 +230,7 @@ class RewardsCfg:
 
     # -- optional penalties
     flat_orientation_l2 = RewTerm(func=mdp.flat_orientation_l2, weight=-4.0)
-    # dof_pos_limits = RewTerm(func=mdp.joint_pos_limits, weight=0.0)
+    dof_pos_limits = RewTerm(func=mdp.joint_pos_limits, weight=-1.0)
 
 
 @configclass
@@ -242,7 +244,7 @@ class TerminationsCfg:
     )
     minimum_height = DoneTerm(
         func=mdp.root_height_below_minimum,
-        params={"minimum_height": 0.2},
+        params={"minimum_height": 0.1},
     )
 
 @configclass
