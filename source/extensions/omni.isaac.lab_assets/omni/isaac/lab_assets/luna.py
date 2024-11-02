@@ -33,11 +33,11 @@ from .velodyne import VELODYNE_VLP_16_RAYCASTER_CFG
 
 LUNA_SIMPLE_ACTUATOR_CFG = DCMotorCfg(
     joint_names_expr=[".*joint"],
-    effort_limit=12.0,
-    velocity_limit=7.5,
+    effort_limit=10.0,
     stiffness={".*": 60.0},
+    velocity_limit=1000.0,
     damping={".*": 3.0},
-    saturation_effort=24.0
+    saturation_effort=12.0
 
 )
 """Configuration for ANYdrive 3.x with DC actuator model."""

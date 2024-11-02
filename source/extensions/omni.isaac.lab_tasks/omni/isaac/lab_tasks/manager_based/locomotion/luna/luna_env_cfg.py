@@ -74,7 +74,6 @@ class MySceneCfg(InteractiveSceneCfg):
 # MDP settings
 ##
 
-
 @configclass
 class CommandsCfg:
     """Command specifications for the MDP."""
@@ -84,19 +83,21 @@ class CommandsCfg:
         resampling_time_range=(10.0, 10.0),
         rel_standing_envs=0.02,
         rel_heading_envs=1.0,
+        heading_command=True,
         heading_control_stiffness=0.5,
         debug_vis=True,
         ranges=mdp.UniformVelocityCommandCfg.Ranges(
-            lin_vel_x=(-0.0, 0.0), lin_vel_y=(-0.0, 0.0), ang_vel_z=(-0.0, 0.0), heading=(-0.0,0.0)
+            lin_vel_x=(-1.0, 1.0), lin_vel_y=(-1.0, 1.0), ang_vel_z=(-1.0, 1.0), heading=(-math.pi, math.pi)
         ),
     )
+
 
 
 @configclass
 class ActionsCfg:
     """Action specifications for the MDP."""
 
-    joint_eff = mdp.JointPositionActionCfg(asset_name="robot", joint_names=[".*"], scale=1.0)
+    joint_eff = mdp.JointPositionActionCfg(asset_name="robot", joint_names=[".*"], scale=1.0, use_default_offset=False)
 
 
 @configclass
@@ -115,7 +116,8 @@ class ObservationsCfg:
         #    func=mdp.projected_gravity,
         #    noise=Unoise(n_min=-0.05, n_max=0.05),
         #)
-        velocity_commands = ObsTerm(func=mdp.generated_commands, params={"command_name": "base_velocity"}, scale=1.0) #3 values
+
+        velocity_commands = ObsTerm(func=mdp.generated_commands, params={"command_name": "base_velocity"})
         joint_pos = ObsTerm(func=mdp.joint_pos, noise=Unoise(n_min=-0.1, n_max=0.1), scale=1.0) #12 values
         joint_vel = ObsTerm(func=mdp.joint_vel, noise=Unoise(n_min=-0.5, n_max=0.5), scale=1.0) #12 values
         #joint_torques = ObsTerm(func=mdp.joint_actions_to_limits, noise=Unoise(n_min=-1, n_max=1),scale=1.0) #12 Values
@@ -197,41 +199,36 @@ class RewardsCfg:
 
     # -- task
     track_lin_vel_xy_exp = RewTerm(
-        func=mdp.track_lin_vel_xy_exp, weight=5.0, params={"command_name": "base_velocity", "std": math.sqrt(0.25)}
+        func=mdp.track_lin_vel_xy_exp, weight=1.0, params={"command_name": "base_velocity", "std": math.sqrt(0.25)}
     )
     track_ang_vel_z_exp = RewTerm(
-        func=mdp.track_ang_vel_z_exp, weight=2.0, params={"command_name": "base_velocity", "std": math.sqrt(0.25)}
+        func=mdp.track_ang_vel_z_exp, weight=0.5, params={"command_name": "base_velocity", "std": math.sqrt(0.25)}
     )
     # -- penalties
     termination_penalty = RewTerm(func=mdp.is_terminated, weight=-200.0)
     lin_vel_z_l2 = RewTerm(func=mdp.lin_vel_z_l2, weight=-2.0)
     ang_vel_xy_l2 = RewTerm(func=mdp.ang_vel_xy_l2, weight=-0.05)
     #base_height_l2 = RewTerm(func=mdp.base_height_l2, weight=-0.1, params={"target_height": 0.3})
-    dof_torques_l2 = RewTerm(func=mdp.joint_torques_l2, weight=-1.0e-5)
+    dof_torques_l2 = RewTerm(func=mdp.joint_torques_l2, weight=-1.0e-3)
     #the penalty for the action rate has the main effect on how dynamic the robot is in its movement, but also how fast it learns to move
-    action_rate_l2 = RewTerm(func=mdp.action_rate_l2, weight=-1.0e-4)
+    action_rate_l2 = RewTerm(func=mdp.action_rate_l2, weight=-1.0)
 
 
-    #joint_deviation_hip_abduction = RewTerm(
-    #    func=mdp.joint_deviation_l1,
-    #    weight=-0.1,
-    #    params={"asset_cfg": SceneEntityCfg("robot", joint_names=".*_shoulder_joint")},
-    #)
-    #joint_deviation_hip_rotation = RewTerm(
-    #    func=mdp.joint_deviation_l1,
-    #    weight=-0.05,
-    #    params={"asset_cfg": SceneEntityCfg("robot", joint_names=".*_hip_joint")},
-    #)
-    #joint_deviation_knee_rotation = RewTerm(
-    #    func=mdp.joint_deviation_l1,
-    #    weight=-0.1,
-    #    params={"asset_cfg": SceneEntityCfg("robot", joint_names=".*_knee_joint")},
-    #)
-
-    # -- optional penalties
-    flat_orientation_l2 = RewTerm(func=mdp.flat_orientation_l2, weight=-4.0)
-    dof_pos_limits = RewTerm(func=mdp.joint_pos_limits, weight=-1.0)
-
+    joint_deviation_hip_abduction = RewTerm(
+        func=mdp.joint_deviation_l1,
+        weight=-0.1,
+        params={"asset_cfg": SceneEntityCfg("robot", joint_names=".*_shoulder_joint")},
+    )
+    joint_deviation_hip_rotation = RewTerm(
+        func=mdp.joint_deviation_l1,
+        weight=-0.05,
+        params={"asset_cfg": SceneEntityCfg("robot", joint_names=".*_hip_joint")},
+    )
+    joint_deviation_knee_rotation = RewTerm(
+        func=mdp.joint_deviation_l1,
+        weight=-0.1,
+        params={"asset_cfg": SceneEntityCfg("robot", joint_names=".*_knee_joint")},
+    )
 
 @configclass
 class TerminationsCfg:
@@ -262,9 +259,8 @@ class LunaFlatEnvCfg(ManagerBasedRLEnvCfg):
     scene: MySceneCfg = MySceneCfg(num_envs=4090, env_spacing=2.5)
     # Basic settings
     observations: ObservationsCfg = ObservationsCfg()
-    actions: ActionsCfg = ActionsCfg()
     commands: CommandsCfg = CommandsCfg()
-    # MDP settings
+    actions: ActionsCfg = ActionsCfg()
     rewards: RewardsCfg = RewardsCfg()
     terminations: TerminationsCfg = TerminationsCfg()
     events: EventCfg = EventCfg()
@@ -314,9 +310,6 @@ class LunaFlatEnvCfg_PLAY(LunaFlatEnvCfg):
             self.scene.terrain.terrain_generator.num_cols = 5
             self.scene.terrain.terrain_generator.curriculum = False
 
-        self.commands.base_velocity.ranges.lin_vel_x = (0.7, 1.0)
-        self.commands.base_velocity.ranges.lin_vel_y = (0.0, 0.0)
-        self.commands.base_velocity.ranges.heading = (0.0, 0.0)
         # disable randomization for play
         self.observations.policy.enable_corruption = False
 
