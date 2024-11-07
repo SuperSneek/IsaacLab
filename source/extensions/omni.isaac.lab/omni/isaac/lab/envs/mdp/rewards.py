@@ -235,6 +235,12 @@ def action_rate_l2(env: ManagerBasedRLEnv) -> torch.Tensor:
     """Penalize the rate of change of the actions using L2 squared kernel."""
     return torch.sum(torch.square(env.action_manager.action - env.action_manager.prev_action), dim=1)
 
+def action_difference_from_currpos(env: ManagerBasedRLEnv, asset_cfg: SceneEntityCfg = SceneEntityCfg("robot")) -> torch.Tensor:
+    """Custom reward: Reward robot for taking actions similar to current position"""
+    asset: Articulation = env.scene[asset_cfg.name]
+    # compute out of limits constraints
+    action = env.action_manager.action
+    return torch.sum(torch.square(action - asset.data.default_joint_pos[:, asset_cfg.joint_ids]), dim=1)
 
 def action_l2(env: ManagerBasedRLEnv) -> torch.Tensor:
     """Penalize the actions using L2 squared kernel."""

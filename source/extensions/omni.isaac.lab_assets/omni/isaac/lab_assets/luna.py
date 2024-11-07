@@ -31,13 +31,12 @@ from .velodyne import VELODYNE_VLP_16_RAYCASTER_CFG
 # Configuration - Actuators.
 ##
 
-LUNA_SIMPLE_ACTUATOR_CFG = DCMotorCfg(
+LUNA_SIMPLE_ACTUATOR_CFG = ImplicitActuatorCfg(
     joint_names_expr=[".*joint"],
     effort_limit=10.0,
-    stiffness={".*": 60.0},
+    stiffness={".*": 40.0},
     velocity_limit=1000.0,
-    damping={".*": 3.0},
-    saturation_effort=12.0
+    damping={".*": 10.0}
 
 )
 """Configuration for ANYdrive 3.x with DC actuator model."""
@@ -69,11 +68,11 @@ LUNA_CFG = ArticulationCfg(
         pos=(0.0, 0.0, 0.55),
         joint_pos={
             ".*_shoulder_joint": 0.0,  # all HAA
-            ".*_hip_joint": 0.8,  # both front HFE
-            ".*_knee_joint": -1.2,  # both hind HFE
+            ".*_hip_joint": 0.0,  # both front HFE
+            ".*_knee_joint": 0.0,  # both hind HFE
         },
     ),
     actuators={"legs": LUNA_SIMPLE_ACTUATOR_CFG},
-    soft_joint_pos_limit_factor=0.95,
+    soft_joint_pos_limit_factor=0.75,
 )
 """Configuration of LUNA quadruped using simple DC actuator models."""
