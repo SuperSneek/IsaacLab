@@ -57,7 +57,7 @@ class MySceneCfg(InteractiveSceneCfg):
     )
 
     # robots
-    robot: ArticulationCfg = Luna_CFG.replace(prim_path="{ENV_REGEX_NS}/Robot")
+    robot: ArticulationCfg = LUNA_CFG.replace(prim_path="{ENV_REGEX_NS}/Robot")
 
     ## sensors
     #height_scanner = RayCasterCfg(
@@ -107,7 +107,7 @@ class CommandsCfg:
 class ActionsCfg:
     """Action specifications for the MDP."""
 
-    joint_eff = mdp.JointEffortActionCfg(asset_name="robot", joint_names=[".*"], scale=9.0)
+    joint_eff = mdp.JointPositionActionCfg(asset_name="robot", joint_names=[".*"], scale=9.0)
 
 
 @configclass
@@ -213,7 +213,7 @@ class RewardsCfg:
 
     # -- task
     track_lin_vel_xy_exp = RewTerm(
-        func=mdp.track_lin_vel_xy_exp, weight=3.0, params={"command_name": "base_velocity", "std": math.sqrt(0.25)}
+        func=mdp.track_lin_vel_xy_exp, weight=10.0, params={"command_name": "base_velocity", "std": math.sqrt(0.25)}
     )
     track_ang_vel_z_exp = RewTerm(
         func=mdp.track_ang_vel_z_exp, weight=2.0, params={"command_name": "base_velocity", "std": math.sqrt(0.25)}
@@ -222,14 +222,14 @@ class RewardsCfg:
     termination_penalty = RewTerm(func=mdp.is_terminated, weight=-200.0)
     lin_vel_z_l2 = RewTerm(func=mdp.lin_vel_z_l2, weight=-2.0)
     ang_vel_xy_l2 = RewTerm(func=mdp.ang_vel_xy_l2, weight=-0.05)
-    base_height_l2 = RewTerm(func=mdp.base_height_l2, weight=-0.1, params={"target_height": 0.4})
-    dof_torques_l2 = RewTerm(func=mdp.joint_torques_l2, weight=-1.0e-5)
-    action_rate_l2 = RewTerm(func=mdp.action_rate_l2, weight=-0.2)
+    #base_height_l2 = RewTerm(func=mdp.base_height_l2, weight=-0.1, params={"target_height": 0.4})
+    dof_torques_l2 = RewTerm(func=mdp.action_difference_from_currpos, weight=-0.1e-3)
+    action_rate_l2 = RewTerm(func=mdp.action_rate_l2, weight=-0.05)
     feet_air_time = RewTerm(
         func=mdp.feet_air_time,
         weight=0.0,
         params={
-            "sensor_cfg": SceneEntityCfg("contact_forces", body_names=".*_FOOT"),
+            "sensor_cfg": SceneEntityCfg("contact_forces", body_names=".*_foot"),
             "command_name": "base_velocity",
             "threshold": 0.3,
         },
@@ -237,23 +237,23 @@ class RewardsCfg:
     joint_deviation_hip_abduction = RewTerm(
         func=mdp.joint_deviation_l1,
         weight=-0.1,
-        params={"asset_cfg": SceneEntityCfg("robot", joint_names=".*_HAA")},
+        params={"asset_cfg": SceneEntityCfg("robot", joint_names=".*_shoulder_joint")},
     )
     joint_deviation_hip_rotation = RewTerm(
         func=mdp.joint_deviation_l1,
-        weight=-0.1,
-        params={"asset_cfg": SceneEntityCfg("robot", joint_names=".*_HFE")},
+        weight=-0.02,
+        params={"asset_cfg": SceneEntityCfg("robot", joint_names=".*_hip_joint")},
     )
     joint_deviation_knee_rotation = RewTerm(
         func=mdp.joint_deviation_l1,
-        weight=-0.2,
-        params={"asset_cfg": SceneEntityCfg("robot", joint_names=".*_KFE")},
+        weight=-0.001,
+        params={"asset_cfg": SceneEntityCfg("robot", joint_names=".*_knee_joint")},
     )
 
     undesired_contacts = RewTerm(
         func=mdp.undesired_contacts,
         weight=-1.0,
-        params={"sensor_cfg": SceneEntityCfg("contact_forces", body_names=".*(?<!_FOOT)"), "threshold": 1.0},
+        params={"sensor_cfg": SceneEntityCfg("contact_forces", body_names=".*(?<!_foot)"), "threshold": 1.0},
     )
 
     # -- optional penalties
