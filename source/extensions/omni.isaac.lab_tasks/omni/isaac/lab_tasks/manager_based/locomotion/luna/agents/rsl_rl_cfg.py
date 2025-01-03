@@ -15,8 +15,8 @@ from omni.isaac.lab_tasks.utils.wrappers.rsl_rl import (
 @configclass
 class LunaFlatPPORunnerCfg(RslRlOnPolicyRunnerCfg):
     num_steps_per_env = 24
-    max_iterations = 1500
-    save_interval = 100
+    max_iterations = 300
+    save_interval = 50
     experiment_name = "Luna_flat_manager"
     empirical_normalization = False
     policy = RslRlPpoActorCriticCfg(
@@ -26,18 +26,18 @@ class LunaFlatPPORunnerCfg(RslRlOnPolicyRunnerCfg):
         activation="elu",
     )
     algorithm = RslRlPpoAlgorithmCfg(
-        value_loss_coef=0.5,
+        value_loss_coef=1.0,
         use_clipped_value_loss=True,
-        clip_param=0.3,
-        entropy_coef=0.02,
-        num_learning_epochs=15,
-        num_mini_batches=8,
-        learning_rate=1.0e-4,
-        schedule="linear",
-        gamma=0.995,
-        lam=0.97,
-        desired_kl=0.02,
-        max_grad_norm=0.5,
+        clip_param=0.2,
+        entropy_coef=0.01,
+        num_learning_epochs=5,
+        num_mini_batches=4,
+        learning_rate=1.0e-3,
+        schedule="adaptive",
+        gamma=0.99,
+        lam=0.95,
+        desired_kl=0.01,
+        max_grad_norm=1.0,
     )
 
 @configclass
