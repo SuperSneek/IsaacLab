@@ -25,7 +25,7 @@ from omni.isaac.lab.assets.articulation import ArticulationCfg
 from omni.isaac.lab.sensors import RayCasterCfg
 from omni.isaac.lab_assets import ISAACLAB_ASSETS_DATA_DIR
 
-from .velodyne import VELODYNE_VLP_16_RAYCASTER_CFG
+#from .velodyne import VELODYNE_VLP_16_RAYCASTER_CFG
 
 ##
 # Configuration - Actuators.
