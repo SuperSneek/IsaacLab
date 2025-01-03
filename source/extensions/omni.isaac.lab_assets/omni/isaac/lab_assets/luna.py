@@ -68,8 +68,8 @@ LUNA_CFG = ArticulationCfg(
         pos=(0.0, 0.0, 0.55),
         joint_pos={
             ".*_shoulder_joint": 0.0,  # all HAA
-            ".*_hip_joint": 0.0,  # both front HFE
-            ".*_knee_joint": 0.0,  # both hind HFE
+            ".*_hip_joint": -0.4,  # both front HFE
+            ".*_knee_joint": 0.9,  # both hind HFE
         },
     ),
     actuators={"legs": LUNA_SIMPLE_ACTUATOR_CFG},

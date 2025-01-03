@@ -87,7 +87,7 @@ class CommandsCfg:
         heading_control_stiffness=0.5,
         debug_vis=True,
         ranges=mdp.UniformVelocityCommandCfg.Ranges(
-            lin_vel_x=(-1.0, 1.0), lin_vel_y=(-1.0, 1.0), ang_vel_z=(-1.0, 1.0), heading=(-math.pi, math.pi)
+            lin_vel_x=(-0.6, 0.6), lin_vel_y=(-0.6, 0.6), ang_vel_z=(-1.0, 1.0), heading=(-math.pi, math.pi)
         ),
     )
 
@@ -162,7 +162,7 @@ class EventCfg:
         func=mdp.reset_root_state_uniform,
         mode="reset",
         params={
-            "pose_range": {"x": (-0.5, 0.5), "y": (-0.5, 0.5), "yaw": (-3.14, 3.14)},
+            "pose_range": {"x": (-0.3, 0.3), "y": (-0.3, 0.3), "yaw": (-0.14, 0.14)},
             "velocity_range": {
                 "x": (-0.0, 0.0),
                 "y": (-0.0, 0.0),
@@ -188,7 +188,7 @@ class EventCfg:
     #     func=mdp.push_by_setting_velocity,
     #     mode="interval",
     #     interval_range_s=(10.0, 15.0),
-    #     params={"velocity_range": {"x": (-0.5, 0.5), "y": (-0.5, 0.5)}},
+    #     params={"velocity_range": {"x": (-0.3, 0.3), "y": (-0.3, 0.3)}},
     # )
 
 
@@ -198,7 +198,7 @@ class RewardsCfg:
 
     # -- task
     track_lin_vel_xy_exp = RewTerm(
-        func=mdp.track_lin_vel_xy_exp, weight=3.0, params={"command_name": "base_velocity", "std": math.sqrt(0.25)}
+        func=mdp.track_lin_vel_xy_exp, weight=12.0, params={"command_name": "base_velocity", "std": math.sqrt(0.25)}
     )
     track_ang_vel_z_exp = RewTerm(
         func=mdp.track_ang_vel_z_exp, weight=2.0, params={"command_name": "base_velocity", "std": math.sqrt(0.25)}
@@ -208,8 +208,8 @@ class RewardsCfg:
     lin_vel_z_l2 = RewTerm(func=mdp.lin_vel_z_l2, weight=-2.0)
     ang_vel_xy_l2 = RewTerm(func=mdp.ang_vel_xy_l2, weight=-0.05)
     dof_torques_l2 = RewTerm(func=mdp.action_difference_from_currpos, weight=-0.1)
-    joint_velocities = RewTerm(func=mdp.joint_vel_l2, weight=-1)
-    action_rate_l2 = RewTerm(func=mdp.action_rate_l2, weight=-1.5)
+    joint_velocities = RewTerm(func=mdp.joint_vel_l2, weight=-0.1)
+    action_rate_l2 = RewTerm(func=mdp.action_rate_l2, weight=-0.1)
     joint_deviation_hip_abduction = RewTerm(
         func=mdp.joint_deviation_l1,
         weight=-0.05,
