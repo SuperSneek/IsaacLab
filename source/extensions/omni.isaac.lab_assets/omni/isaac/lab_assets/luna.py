@@ -20,7 +20,7 @@ Reference:
 """
 
 import omni.isaac.lab.sim as sim_utils
-from omni.isaac.lab.actuators import ActuatorNetLSTMCfg, DCMotorCfg, ImplicitActuatorCfg
+from omni.isaac.lab.actuators import ActuatorNetLSTMCfg, DCMotorCfg, IdealPDActuatorCfg
 from omni.isaac.lab.assets.articulation import ArticulationCfg
 from omni.isaac.lab.sensors import RayCasterCfg
 from omni.isaac.lab_assets import ISAACLAB_ASSETS_DATA_DIR
@@ -31,7 +31,7 @@ from omni.isaac.lab_assets import ISAACLAB_ASSETS_DATA_DIR
 # Configuration - Actuators.
 ##
 
-LUNA_SIMPLE_ACTUATOR_CFG = ImplicitActuatorCfg(
+LUNA_SIMPLE_ACTUATOR_CFG = IdealPDActuatorCfg(
     joint_names_expr=[".*joint"],
     effort_limit=10.0,
     stiffness={".*": 40.0},
@@ -69,7 +69,7 @@ LUNA_CFG = ArticulationCfg(
         joint_pos={
             ".*_shoulder_joint": 0.0,  # all HAA
             ".*_hip_joint": -0.4,  # both front HFE
-            ".*_knee_joint": 0.9,  # both hind HFE
+            ".*_knee_joint": 0.8,  # both hind HFE
         },
     ),
     actuators={"legs": LUNA_SIMPLE_ACTUATOR_CFG},
