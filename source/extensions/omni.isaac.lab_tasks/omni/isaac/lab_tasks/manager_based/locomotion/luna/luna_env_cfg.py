@@ -98,7 +98,7 @@ class CommandsCfg:
         heading_control_stiffness=0.5,
         debug_vis=True,
         ranges=mdp.UniformVelocityCommandCfg.Ranges(
-            lin_vel_x=(-0.4, 0.4), lin_vel_y=(-0.4, 0.4), ang_vel_z=(-0.4, 0.4), heading=(-math.pi, math.pi)
+            lin_vel_x=(-0.2, 0.2), lin_vel_y=(-0.2, 0.2), ang_vel_z=(-0.2, 0.2), heading=(-math.pi, math.pi)
         ),
     )
 
@@ -164,15 +164,15 @@ class EventCfg:
     )
 
     # reset
-    # base_external_force_torque = EventTerm(
-    #     func=mdp.apply_external_force_torque,
-    #     mode="reset",
-    #     params={
-    #         "asset_cfg": SceneEntityCfg("robot", body_names="base_link"),
-    #         "force_range": (0.0, 0.0),
-    #         "torque_range": (-0.0, 0.0),
-    #     },
-    # )
+    base_external_force_torque = EventTerm(
+        func=mdp.apply_external_force_torque,
+        mode="reset",
+        params={
+            "asset_cfg": SceneEntityCfg("robot", body_names="base_link"),
+            "force_range": (0.0, 0.0),
+            "torque_range": (-0.0, 0.0),
+        },
+    )
 
     reset_base = EventTerm(
         func=mdp.reset_root_state_uniform,
@@ -213,16 +213,17 @@ class RewardsCfg:
     """Reward terms for the MDP."""
     # -- task
     track_lin_vel_xy_exp = RewTerm(
-        func=mdp.track_lin_vel_xy_exp, weight=1.0, params={"command_name": "base_velocity", "std": math.sqrt(0.25)}
+        func=mdp.track_lin_vel_xy_exp, weight=1.5, params={"command_name": "base_velocity", "std": math.sqrt(0.25)}
     )
     track_ang_vel_z_exp = RewTerm(
-        func=mdp.track_ang_vel_z_exp, weight=0.5, params={"command_name": "base_velocity", "std": math.sqrt(0.25)}
+        func=mdp.track_ang_vel_z_exp, weight=0.8, params={"command_name": "base_velocity", "std": math.sqrt(0.25)}
     )
     # -- penalties
+    terminated = RewTerm(func=mdp.is_terminated, weight=-100.0)
     lin_vel_z_l2 = RewTerm(func=mdp.lin_vel_z_l2, weight=-2.0)
     ang_vel_xy_l2 = RewTerm(func=mdp.ang_vel_xy_l2, weight=-0.05)
     dof_torques_l2 = RewTerm(func=mdp.joint_torques_l2, weight=-1.0e-4)
-    dof_acc_l2 = RewTerm(func=mdp.joint_acc_l2, weight=-2.5e-7)
+    dof_acc_l2 = RewTerm(func=mdp.joint_vel_l2, weight=-2.5e-3)
     action_rate_l2 = RewTerm(func=mdp.action_rate_l2, weight=-0.01)
     diff = RewTerm(func=mdp.action_difference_from_currpos, weight=-0.01)
     feet_air_time = RewTerm(

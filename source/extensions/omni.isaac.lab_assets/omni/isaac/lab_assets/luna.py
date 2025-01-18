@@ -20,7 +20,7 @@ Reference:
 """
 
 import omni.isaac.lab.sim as sim_utils
-from omni.isaac.lab.actuators import ActuatorNetLSTMCfg, DCMotorCfg, IdealPDActuatorCfg
+from omni.isaac.lab.actuators import RemotizedPDActuatorCfg, DCMotorCfg, IdealPDActuatorCfg
 from omni.isaac.lab.assets.articulation import ArticulationCfg
 from omni.isaac.lab.sensors import RayCasterCfg
 from omni.isaac.lab_assets import ISAACLAB_ASSETS_DATA_DIR
@@ -31,12 +31,13 @@ from omni.isaac.lab_assets import ISAACLAB_ASSETS_DATA_DIR
 # Configuration - Actuators.
 ##
 
-LUNA_SIMPLE_ACTUATOR_CFG = IdealPDActuatorCfg(
+LUNA_SIMPLE_ACTUATOR_CFG = DCMotorCfg(
     joint_names_expr=[".*joint"],
-    effort_limit=10.0,
+    effort_limit=4.0,
     stiffness={".*joint": 40.0},
     velocity_limit=1000.0,
     damping={".*joint": 10.0},
+    saturation_effort=12.0
 )
 """Configuration for ANYdrive 3.x with DC actuator model."""
 
