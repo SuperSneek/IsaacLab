@@ -36,8 +36,7 @@ LUNA_SIMPLE_ACTUATOR_CFG = IdealPDActuatorCfg(
     effort_limit=10.0,
     stiffness={".*joint": 40.0},
     velocity_limit=1000.0,
-    damping={".*joint": 10.0}
-
+    damping={".*joint": 10.0},
 )
 """Configuration for ANYdrive 3.x with DC actuator model."""
 
@@ -68,8 +67,8 @@ LUNA_CFG = ArticulationCfg(
         pos=(0.0, 0.0, 0.55),
         joint_pos={
             ".*_shoulder_joint": 0.0,  # all HAA
-            ".*_hip_joint": -0.4,  # both front HFE
-            ".*_knee_joint": 0.8,  # both hind HFE
+            ".*_hip_joint": 0.0,  # both front HFE
+            ".*_knee_joint": 0.0,  # both hind HFE
         },
     ),
     actuators={"legs": LUNA_SIMPLE_ACTUATOR_CFG},

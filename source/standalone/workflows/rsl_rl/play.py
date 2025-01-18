@@ -114,7 +114,6 @@ def main():
     # reset environment
     obs, _ = env.get_observations()
     timestep = 0
-    once = True
     # simulate environment
     while simulation_app.is_running():
         i = i + 1
@@ -126,6 +125,7 @@ def main():
             # env stepping
             obs, _, _, _ = env.step(actions)
             if i % 100 == 1:
+                #print joint names
                 print(obs)
                 print(actions)
                 print("---------------------------------")
