@@ -34,9 +34,9 @@ from omni.isaac.lab_assets import ISAACLAB_ASSETS_DATA_DIR
 LUNA_SIMPLE_ACTUATOR_CFG = IdealPDActuatorCfg(
     joint_names_expr=[".*joint"],
     effort_limit=10.0,
-    stiffness={".*": 40.0},
+    stiffness={".*joint": 40.0},
     velocity_limit=1000.0,
-    damping={".*": 10.0}
+    damping={".*joint": 10.0}
 
 )
 """Configuration for ANYdrive 3.x with DC actuator model."""
@@ -60,7 +60,7 @@ LUNA_CFG = ArticulationCfg(
             max_depenetration_velocity=1.0,
         ),
         articulation_props=sim_utils.ArticulationRootPropertiesCfg(
-            enabled_self_collisions=True, solver_position_iteration_count=4, solver_velocity_iteration_count=0, fix_root_link=True
+            enabled_self_collisions=True, solver_position_iteration_count=4, solver_velocity_iteration_count=0, fix_root_link=False
         ),
         # collision_props=sim_utils.CollisionPropertiesCfg(contact_offset=0.02, rest_offset=0.0),
     ),
