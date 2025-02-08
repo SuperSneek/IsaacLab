@@ -20,7 +20,7 @@ Reference:
 """
 
 import omni.isaac.lab.sim as sim_utils
-from omni.isaac.lab.actuators import RemotizedPDActuatorCfg, DCMotorCfg, IdealPDActuatorCfg
+from omni.isaac.lab.actuators import RemotizedPDActuatorCfg, DCMotorCfg, ImplicitActuatorCfg, IdealPDActuatorCfg
 from omni.isaac.lab.assets.articulation import ArticulationCfg
 from omni.isaac.lab.sensors import RayCasterCfg
 from omni.isaac.lab_assets import ISAACLAB_ASSETS_DATA_DIR
@@ -31,13 +31,13 @@ from omni.isaac.lab_assets import ISAACLAB_ASSETS_DATA_DIR
 # Configuration - Actuators.
 ##
 
-LUNA_SIMPLE_ACTUATOR_CFG = DCMotorCfg(
+LUNA_SIMPLE_ACTUATOR_CFG = IdealPDActuatorCfg(
     joint_names_expr=[".*joint"],
-    effort_limit=4.0,
-    stiffness={".*joint": 40.0},
-    velocity_limit=1000.0,
-    damping={".*joint": 10.0},
-    saturation_effort=12.0
+    effort_limit=12.0,
+    stiffness={".*joint": 120.0},
+    velocity_limit=100.0,
+    damping={".*joint": 20.0},
+    #saturation_effort=12.0
 )
 """Configuration for ANYdrive 3.x with DC actuator model."""
 
@@ -65,11 +65,11 @@ LUNA_CFG = ArticulationCfg(
         # collision_props=sim_utils.CollisionPropertiesCfg(contact_offset=0.02, rest_offset=0.0),
     ),
     init_state=ArticulationCfg.InitialStateCfg(
-        pos=(0.0, 0.0, 0.55),
+        pos=(0.0, 0.0, 0.51),
         joint_pos={
             ".*_shoulder_joint": 0.0,  # all HAA
-            ".*_hip_joint": 0.0,  # both front HFE
-            ".*_knee_joint": 0.0,  # both hind HFE
+            ".*_hip_joint": 0.4,  # both front HFE
+            ".*_knee_joint": -0.8,  # both hind HFE
         },
     ),
     actuators={"legs": LUNA_SIMPLE_ACTUATOR_CFG},
