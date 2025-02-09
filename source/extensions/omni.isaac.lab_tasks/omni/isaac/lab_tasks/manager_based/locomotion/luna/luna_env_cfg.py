@@ -219,13 +219,12 @@ class RewardsCfg:
         func=mdp.track_ang_vel_z_exp, weight=0.8, params={"command_name": "base_velocity", "std": math.sqrt(0.25)}
     )
     # -- penalties
-    terminated = RewTerm(func=mdp.is_terminated, weight=-50.0)
-    #lin_vel_z_l2 = RewTerm(func=mdp.lin_vel_z_l2, weight=-2.0)
+    terminated = RewTerm(func=mdp.is_terminated, weight=-15.0)
     ang_vel_xy_l2 = RewTerm(func=mdp.ang_vel_xy_l2, weight=-0.05)
-    dof_torques_l2 = RewTerm(func=mdp.joint_torques_l2, weight=-1.0e-5)
+    dof_torques_l2 = RewTerm(func=mdp.joint_torques_l2, weight=-2.0e-5)
     dof_acc_l2 = RewTerm(func=mdp.joint_vel_l2, weight=-2.5e-4)
-    action_rate_l2 = RewTerm(func=mdp.action_rate_l2, weight=-0.1)
-    target_height = RewTerm(func=mdp.base_height_l2, params={"target_height": 0.35}, weight=-30.0)
+    action_rate_l2 = RewTerm(func=mdp.action_rate_l2, weight=-0.01)
+    #target_height = RewTerm(func=mdp.base_height_l2, params={"target_height": 0.25}, weight=-30.0)
     #diff = RewTerm(func=mdp.action_difference_from_currpos, weight=-0.01)
     #feet_air_time = RewTerm(
     #    func=mdp.feet_air_time,
@@ -244,12 +243,12 @@ class RewardsCfg:
     )
     joint_deviation_hip_rotation = RewTerm(
         func=mdp.joint_deviation_l1,
-        weight=-0.01,
+        weight=-0.1,
         params={"asset_cfg": SceneEntityCfg("robot", joint_names=".*_hip_joint")},
     )
     joint_deviation_knee_rotation = RewTerm(
         func=mdp.joint_deviation_l1,
-        weight=-0.005,
+        weight=-0.05,
         params={"asset_cfg": SceneEntityCfg("robot", joint_names=".*_knee_joint")},
     )
 
@@ -257,11 +256,11 @@ class RewardsCfg:
 
     undesired_contacts = RewTerm(
         func=mdp.undesired_contacts,
-        weight=-10.0,
-        params={"sensor_cfg": SceneEntityCfg("contact_forces", body_names=".*lower_leg"), "threshold": 0.0},
+        weight=-100.0,
+        params={"sensor_cfg": SceneEntityCfg("contact_forces", body_names=".*lower_leg"), "threshold": 1.0},
     )
     # -- optional penalties
-    flat_orientation_l2 = RewTerm(func=mdp.flat_orientation_l2, weight=-15.0)
+    flat_orientation_l2 = RewTerm(func=mdp.flat_orientation_l2, weight=-7.0)
     #dof_pos_limits = RewTerm(func=mdp.joint_pos_limits, weight=-0.3)
 
 
@@ -276,7 +275,7 @@ class TerminationsCfg:
     )
     minimum_height = DoneTerm(
         func=mdp.root_height_below_minimum,
-        params={"minimum_height": 0.2},
+        params={"minimum_height": 0.25},
     )
 
 @configclass
@@ -291,7 +290,7 @@ class LunaFlatEnvCfg(ManagerBasedRLEnvCfg):
     """Configuration for the locomotion velocity-tracking environment."""
 
     # Scene settings
-    scene: MySceneCfg = MySceneCfg(num_envs=8000, env_spacing=2.5)
+    scene: MySceneCfg = MySceneCfg(num_envs=4000, env_spacing=2.5)
     # Basic settings
     observations: ObservationsCfg = ObservationsCfg()
     actions: ActionsCfg = ActionsCfg()

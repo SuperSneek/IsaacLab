@@ -34,7 +34,7 @@ from omni.isaac.lab_assets import ISAACLAB_ASSETS_DATA_DIR
 LUNA_SIMPLE_ACTUATOR_CFG = IdealPDActuatorCfg(
     joint_names_expr=[".*joint"],
     effort_limit=12.0,
-    stiffness={".*joint": 120.0},
+    stiffness={".*joint": 140.0},
     velocity_limit=100.0,
     damping={".*joint": 20.0},
     #saturation_effort=12.0
